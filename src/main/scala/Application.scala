@@ -1,42 +1,36 @@
 package main
 
-import io.IOUtils
-import pdf.PDFUtils
-
-import scala.util.{Failure, Success}
+import io.circe.syntax._
+import utils.{FileUtils, IOUtils, PDFUtils}
 
 object Application {
 
   def main(args: Array[String]) {
 
-    val fileNames = args.toSeq
-
     System.setProperty("java.awt.headless", "true")
 
-    if (fileNames.length < 1) {
-      IOUtils.printUsage()
-      IOUtils.exit(1)
-    }
+    if (args.length < 2) { IOUtils.printUsage(); IOUtils.exit() }
 
-    val texts = for (fileName <- fileNames) yield {
+    // Secure by design
+    val output = args.head
+    val outputFile = FileUtils.openFile(output)
+    val input = args.tail
+
+    val texts = for (fileName <- input) yield {
       for {
         pdf <- PDFUtils.openPdf(fileName)
         text <- PDFUtils.getTextFromPdf(pdf)
       } yield { PDFUtils.closePdf(pdf); text }
     }.getOrElse(null)
 
+    val pattern = "([a-zA-Z])\\w+".r
+    val extractedWords = for (text <- texts) yield pattern.findAllIn(text.toLowerCase).toList
 
-    for (text <- texts) {
+    val result = extractedWords.flatMap(_.groupBy(identity).view.mapValues(_.size)).toMap
 
-      val pattern = "([a-zA-Z])\\w+".r
+    val writeOp = FileUtils.writeFile(outputFile, result.asJson.toString)
 
-      val foundElements = pattern.findAllIn(text.toLowerCase).toList
-
-      val foundElementsMapped = foundElements.groupBy(identity).view.mapValues(_.size)
-
-      println(foundElementsMapped.toSeq.sortBy(_._2)(Ordering.Int.reverse))
-
-    }
+    IOUtils.exit(if (writeOp.isSuccess) 0 else 1)
 
   }
 

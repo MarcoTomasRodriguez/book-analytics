@@ -1,4 +1,4 @@
-package io
+package utils
 
 object IOUtils {
 
@@ -6,9 +6,10 @@ object IOUtils {
 
   def printUsage(): Unit = print(
     """
+      |Book Analytics
       |
       |Usage:
-      | book-analytics [filename]
+      | book-analytics output [input]
       |
       |""".stripMargin)
 

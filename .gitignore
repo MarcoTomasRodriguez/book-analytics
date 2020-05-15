@@ -1,0 +1,27 @@
+# Scala gitignore boilerplate
+
+bin/
+project/
+target/
+build/
+
+build
+.classpath
+.project
+.settings
+.worksheet
+
+*.log
+*.iml
+*.ipr
+*.iws
+.idea
+
+.DS_Store
+
+.history
+.scala_dependencies
+.cache
+.cache-main
+
+*.class

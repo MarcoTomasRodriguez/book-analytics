@@ -17,8 +17,13 @@ object PDFUtils {
     pdf.close()
   }
 
-  def getTextFromPdf(pdf: PDDocument): Try[String] = Try{
+  def getTextFromPdf(pdf: PDDocument): Try[String] = Try {
     new PDFTextStripper().getText(pdf)
+  }
+
+  def getTextFromFileName(fileName: String): Try[String] = {
+    for { pdf <- PDFUtils.openPdf(fileName); text <- PDFUtils.getTextFromPdf(pdf) }
+    yield { PDFUtils.closePdf(pdf); text }
   }
 
 }

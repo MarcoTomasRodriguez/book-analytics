@@ -13,3 +13,5 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-generic",
   "io.circe" %% "circe-parser"
 ).map(_ % "0.12.3")
+
+libraryDependencies += "com.nrinaudo" %% "kantan.csv" % "0.6.0"

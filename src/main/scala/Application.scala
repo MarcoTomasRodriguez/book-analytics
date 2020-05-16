@@ -1,11 +1,11 @@
 package main
 
-import io.circe.syntax._
 import utils.IOUtils._
 import utils.FileUtils
 import utils.PDFUtils
 
 import scala.collection.immutable.ListMap
+import scala.util.{Success, Failure}
 
 object Application {
 
@@ -37,9 +37,12 @@ object Application {
     val orderedGroupedWords = ListMap(groupedWords.toSeq.sortWith(_._2 > _._2): _*)
 
     // Writes the file in Json format
-    val writeOp = FileUtils.writeFile(outputFile, orderedGroupedWords.asJson.toString)
+    val writeOp = FileUtils.writeInferredOutput(outputFile, orderedGroupedWords)
 
-    sys.exit(if (writeOp.isSuccess) 0 else 1)
+    writeOp match {
+      case Success(_) => sys.exit(0)
+      case Failure(ex) => { println(ex); sys.exit(1) }
+    }
 
   }
 

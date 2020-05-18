@@ -1,7 +1,6 @@
 # Scala gitignore boilerplate
 
 bin/
-project/
 target/
 build/
 

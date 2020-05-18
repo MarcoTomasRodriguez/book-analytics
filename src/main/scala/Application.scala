@@ -3,9 +3,10 @@ package main
 import utils.IOUtils._
 import utils.FileUtils
 import utils.PDFUtils
+import words.Words
 
 import scala.collection.immutable.ListMap
-import scala.util.{Success, Failure}
+import scala.util.{Failure, Success}
 
 object Application {
 
@@ -16,7 +17,7 @@ object Application {
 
     // Head and tail are secure by design
     val output = args.head
-    val input = args.tail
+    val input = args.tail.toList
 
     // Output file
     val outputFile = FileUtils.openFile(output)
@@ -24,17 +25,14 @@ object Application {
     // Opens all the filenames and gets the text inside
     val texts = input.map(PDFUtils.getTextFromFileName(_).getOrElse(null))
 
-    // Match all the words (a-zA-Z)
-    val pattern = "([a-zA-Z])\\w+".r
-
     // Finds every word from every text
-    val wordsFromTexts = texts.flatMap(text => pattern.findAllIn(text.toLowerCase))
+    val wordsFromTexts = texts.flatMap(Words.findAllWordsInText(_))
 
     // Group words by their identity
-    val groupedWords = wordsFromTexts.groupBy(identity).view.mapValues(_.size)
+    val groupedWords = Words.groupWordsByIdentity(wordsFromTexts)
 
     // Orders the groupedWords by count (ASC)
-    val orderedGroupedWords = ListMap(groupedWords.toSeq.sortWith(_._2 > _._2): _*)
+    val orderedGroupedWords = Words.orderGroupedWords(groupedWords)(_._2 > _._2)
 
     // Writes the file in Json format
     val writeOp = FileUtils.writeInferredOutput(outputFile, orderedGroupedWords)

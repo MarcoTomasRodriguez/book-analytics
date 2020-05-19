@@ -7,8 +7,8 @@ object Words {
 
   def findAllWordsInText(text: String): Regex.MatchIterator = {
 
-    // Matches all the words (a-zA-Z)
-    val pattern = "([a-zA-Z])\\w+".r
+    // Matches all the words (a-z)
+    val pattern = "([a-z])\\w+".r
 
     // Non case-sensitive expression
     pattern.findAllIn(text.toLowerCase)
